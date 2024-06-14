@@ -155,7 +155,8 @@ POTCAR:
   Sm: Sm_3
   Sn: Sn_d
   Sr: Sr_sv
-  Ta: Ta_pv
+  # Ta: Ta_pv
+  Ta: Ta
   Tb: Tb_3
   Tc: Tc_pv
   Te: Te
