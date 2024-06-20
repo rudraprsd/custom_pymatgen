@@ -64,7 +64,7 @@ if TYPE_CHECKING:
     from pymatgen.util.typing import PathLike, Tuple3Ints, Vector3D
 
     UserPotcarFunctional = Union[
-        Literal["PBE", "PBE_52", "PBE_54", "LDA", "LDA_52", "LDA_54", "PW91", "LDA_US", "PW91_US"], None
+    Literal["PBE_64", "PBE_52_W_HASH", "PBE_54_W_HASH", "PBE", "PBE_52", "PBE_54", "LDA", "LDA_52", "LDA_54", "PW91", "LDA_US", "PW91_US"], None
     ]
 
 MODULE_DIR = os.path.dirname(__file__)
