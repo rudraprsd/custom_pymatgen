@@ -3,6 +3,7 @@
 # with Materials Project data for analysis.
 PARENT: VASPIncarBase
 INCAR:
+  ISTART: 0
 KPOINTS:
   reciprocal_density: 64
 POTCAR_FUNCTIONAL: PBE
