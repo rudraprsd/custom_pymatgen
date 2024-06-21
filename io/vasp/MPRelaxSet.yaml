@@ -3,20 +3,6 @@
 # with Materials Project data for analysis.
 PARENT: VASPIncarBase
 INCAR:
-  ISTART: 0
-  ICHARG: 2
-  ENCUT: 400
-  EDIFF: 10E-6
-  LREAL: FALSE
-  NELM: 100
-  ALGO: Normal             # or use IALGO = 38
-  ISMEAR: 0
-  SIGMA: 0.05  
-  NSW: 40
-  ISIF: 2
-  IBRION: 2
-  EDIFFG: -0.001
-  IVDW: 11
 KPOINTS:
   reciprocal_density: 64
 POTCAR_FUNCTIONAL: PBE
