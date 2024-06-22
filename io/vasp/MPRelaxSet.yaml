@@ -2,8 +2,8 @@
 # Reasonably robust. Use this if you intend to combine your calculated data
 # with Materials Project data for analysis.
 PARENT: VASPIncarBase
-#INCAR:
-  #  ISTART: 0
+INCAR:
+  LMAXMIX: 2
 KPOINTS:
   reciprocal_density: 64
 POTCAR_FUNCTIONAL: PBE
@@ -33,7 +33,7 @@ POTCAR:
   Eu: Eu
   F: F
   Fe: Fe
-  Ga: Ga_d
+  Ga: Ga
   Gd: Gd
   Ge: Ge_d
   H: H

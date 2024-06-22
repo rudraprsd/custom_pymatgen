@@ -33,6 +33,7 @@ import itertools
 import os
 import re
 import warnings
+from collections import OrderedDict
 from collections.abc import Sequence
 from copy import deepcopy
 from dataclasses import dataclass, field
@@ -516,8 +517,8 @@ class VaspInputSet(InputGenerator, abc.ABC):
             }
 
         incar_updates = self.incar_updates
-        settings = dict(self._config_dict["INCAR"])
-        auto_updates: dict[str, Any] = {}
+        settings = OrderedDict(self._config_dict["INCAR"])
+        auto_updates: OrderedDict[str, Any] = {}
         if self.auto_ispin and (self._ispin is not None):
             auto_updates["ISPIN"] = self._ispin
 
@@ -3127,23 +3128,31 @@ def _combine_kpoints(*kpoints_objects: Kpoints | None) -> Kpoints:
     )
 
 
-def _apply_incar_updates(incar: dict | Incar, updates: dict[str, Any], skip: Sequence[str] = ()) -> None:
-    """
-    Apply updates to an INCAR file.
+# def _apply_incar_updates(incar: dict | Incar, updates: dict[str, Any], skip: Sequence[str] = ()) -> None:
+#     """
+#     Apply updates to an INCAR file.
+#
+#     Args:
+#         incar (Incar): An incar.
+#         updates (dict): Updates to apply.
+#         skip (list of str): Keys to skip.
+#     """
+#     for k, v in updates.items():
+#         if k in skip:
+#             continue
+#
+#         if v is None:
+#             incar.pop(k, None)
+#         else:
+#             incar[k] = v
 
-    Args:
-        incar (Incar): An incar.
-        updates (dict): Updates to apply.
-        skip (list of str): Keys to skip.
-    """
-    for k, v in updates.items():
-        if k in skip:
-            continue
 
-        if v is None:
-            incar.pop(k, None)
-        else:
-            incar[k] = v
+def _apply_incar_updates(settings: OrderedDict, updates: dict, skip: list = None):
+    if skip is None:
+        skip = []
+    for key, value in updates.items():
+        if key not in skip:
+            settings[key] = value
 
 
 def _remove_unused_incar_params(incar: dict | Incar, skip: Sequence[str] = ()) -> None:
