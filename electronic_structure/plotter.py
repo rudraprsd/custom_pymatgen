@@ -1024,7 +1024,7 @@ class BSPlotterProjected(BSPlotter):
                             ax.plot(
                                 data["distances"][k_path_idx][j],
                                 data["energy"][str(Spin.up)][k_path_idx][band_idx][j],
-                                "bo",
+                                "yo",
                                 markersize=proj[k_path_idx][str(Spin.up)][band_idx][j][str(element)][orbital]
                                 * marker_size,
                             )
