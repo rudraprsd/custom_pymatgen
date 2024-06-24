@@ -356,10 +356,10 @@ class BSPlotter:
                         logger.debug(f"already print label... skipping label {ticks['label'][idx]}")
                     else:
                         logger.debug(f"Adding a line at {ticks['distance'][idx]} for label {ticks['label'][idx]}")
-                        ax.axvline(ticks["distance"][idx], color="k")
+                        ax.axvline(ticks["distance"][idx], color="gray", linewidth=1)
                 else:
                     logger.debug(f"Adding a line at {ticks['distance'][idx]} for label {ticks['label'][idx]}")
-                    ax.axvline(ticks["distance"][idx], color="k")
+                    ax.axvline(ticks["distance"][idx], color="gray", linewidth=1)
         return ax
 
     @staticmethod
