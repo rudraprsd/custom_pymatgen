@@ -1168,60 +1168,153 @@ class BSPlotterProjected(BSPlotter):
 
         return axs
 
-    def get_elt_projected_plots_color(
-        self,
-        zero_to_efermi: bool = True,
-        elt_ordered: list | None = None,
-        band_linewidth: float = 3,
-    ) -> plt.Axes:
-        """Generate a pyplot plot where the band structure
-        line color depends on the element of the band. where each
-        element is associated with red, green or blue.
+    # def get_elt_projected_plots_color(
+    #     self,
+    #     zero_to_efermi: bool = True,
+    #     elt_ordered: list | None = None,
+    #     band_linewidth: float = 3,
+    # ) -> plt.Axes:
+    #     """Generate a pyplot plot where the band structure
+    #     line color depends on the element of the band. where each
+    #     element is associated with red, green or blue.
+    #
+    #     The method can only deal with binary and ternary compounds.
+    #
+    #     Spin up and spin down are differentiated by a '-' and a '--' line.
+    #
+    #     Args:
+    #         zero_to_efermi: set the Fermi level as the plot's origin
+    #             (i.e. subtract E_f). Defaults to True.
+    #         elt_ordered: A list of ordered Elements.
+    #             The first one is red, second green, last blue.
+    #         band_linewidth (float): width of the line.
+    #
+    #     Raises:
+    #         RuntimeError: if the band structure is None.
+    #         ValueError: if the number of elements is not 2 or 3.
+    #
+    #     Returns:
+    #         a pyplot object
+    #     """
+    #     if self._bs.structure is None:
+    #         raise RuntimeError("Band structure cannot be None.")
+    #
+    #     n_elems = len(self._bs.structure.elements)
+    #     if n_elems > 3:
+    #         raise ValueError(f"Can only plot binary and ternary compounds, got {n_elems} elements")
+    #     if elt_ordered is None:
+    #         elt_ordered = self._bs.structure.elements
+    #     proj = self._get_projections_by_branches({e.symbol: ["s", "p", "d"] for e in self._bs.structure.elements})
+    #     data = self.bs_plot_data(zero_to_efermi)
+    #     ax = pretty_plot(12, 8)
+    #
+    #     spins = [Spin.up]
+    #     if self._bs.is_spin_polarized:
+    #         spins = [Spin.up, Spin.down]
+    #     self._make_ticks(ax)
+    #     for spin in spins:
+    #         for b in range(len(data["distances"])):
+    #             for band_idx in range(self._nb_bands):
+    #                 for j in range(len(data["energy"][str(spin)][b][band_idx]) - 1):
+    #                     sum_e = 0.0
+    #                     for el in elt_ordered:
+    #                         sum_e = sum_e + sum(
+    #                             proj[b][str(spin)][band_idx][j][str(el)][o]
+    #                             for o in proj[b][str(spin)][band_idx][j][str(el)]
+    #                         )
+    #                     if sum_e == 0.0:
+    #                         color = [0.0] * len(elt_ordered)
+    #                     else:
+    #                         color = [
+    #                             sum(
+    #                                 proj[b][str(spin)][band_idx][j][str(el)][o]
+    #                                 for o in proj[b][str(spin)][band_idx][j][str(el)]
+    #                             )
+    #                             / sum_e
+    #                             for el in elt_ordered
+    #                         ]
+    #                     if len(color) == 2:
+    #                         color.append(0.0)
+    #                         color[2] = color[1]
+    #                         color[1] = 0.0
+    #
+    #                     sign = "--" if spin == Spin.down else "-"
+    #
+    #                     ax.plot(
+    #                         [data["distances"][b][j], data["distances"][b][j + 1]],
+    #                         [data["energy"][str(spin)][b][band_idx][j], data["energy"][str(spin)][b][band_idx][j + 1]],
+    #                         sign,
+    #                         color=color,
+    #                         linewidth=band_linewidth,
+    #                     )
+    #
+    #     if self._bs.is_metal():
+    #         if zero_to_efermi:
+    #             e_min = -10
+    #             e_max = 10
+    #             ax.set_ylim(e_min, e_max)
+    #             ax.set_ylim(self._bs.efermi + e_min, self._bs.efermi + e_max)
+    #     else:
+    #         ax.set_ylim(data["vbm"][0][1] - 4.0, data["cbm"][0][1] + 2.0)
+    #     # https://github.com/materialsproject/pymatgen/issues/562
+    #     x_max = data["distances"][-1][-1]
+    #     ax.set_xlim(0, x_max)
+    #     return ax
 
-        The method can only deal with binary and ternary compounds.
 
-        Spin up and spin down are differentiated by a '-' and a '--' line.
+
+    def get_elt_projected_plots_color(self, zero_to_efermi=True, elt_ordered=None, band_linewidth=3):
+        """Generate a pyplot plot where the band structure line color depends on the element of the band.
 
         Args:
-            zero_to_efermi: set the Fermi level as the plot's origin
-                (i.e. subtract E_f). Defaults to True.
-            elt_ordered: A list of ordered Elements.
-                The first one is red, second green, last blue.
-            band_linewidth (float): width of the line.
+            zero_to_efermi (bool): Set the Fermi level as the plot's origin. Defaults to True.
+            elt_ordered (list): A list of ordered elements. The first one is red, second green, third blue, fourth magenta.
+                                Defaults to None.
+            band_linewidth (float): Width of the line. Defaults to 3.
 
         Raises:
-            RuntimeError: if the band structure is None.
-            ValueError: if the number of elements is not 2 or 3.
+            RuntimeError: If the band structure is None.
+            ValueError: If the number of elements is not between 1 and 4.
 
         Returns:
-            a pyplot object
+            plt.Axes: A pyplot object.
         """
         if self._bs.structure is None:
             raise RuntimeError("Band structure cannot be None.")
 
         n_elems = len(self._bs.structure.elements)
-        if n_elems > 3:
-            raise ValueError(f"Can only plot binary and ternary compounds, got {n_elems} elements")
+        if not (1 <= n_elems <= 4):
+            raise ValueError(f"Can only plot compounds with 1 to 4 elements, got {n_elems} elements")
         if elt_ordered is None:
             elt_ordered = self._bs.structure.elements
+
+        # Ensure elt_ordered has exactly 4 elements, filling with empty strings if necessary
+        while len(elt_ordered) < 4:
+            elt_ordered.append("")
+
         proj = self._get_projections_by_branches({e.symbol: ["s", "p", "d"] for e in self._bs.structure.elements})
         data = self.bs_plot_data(zero_to_efermi)
-        ax = pretty_plot(12, 8)
+        ax = plt.figure(figsize=(12, 8)).add_subplot()
 
         spins = [Spin.up]
         if self._bs.is_spin_polarized:
             spins = [Spin.up, Spin.down]
         self._make_ticks(ax)
+        legend_elements = []  # List to store legend elements
+        for i, (el, color) in enumerate(zip(elt_ordered, ['red', 'green', 'blue', 'magenta'])):
+            legend_elements.append(plt.Line2D([0], [0], color=color, lw=band_linewidth, label=f"{el} {i}"))
+
         for spin in spins:
             for b in range(len(data["distances"])):
                 for band_idx in range(self._nb_bands):
                     for j in range(len(data["energy"][str(spin)][b][band_idx]) - 1):
                         sum_e = 0.0
                         for el in elt_ordered:
-                            sum_e = sum_e + sum(
-                                proj[b][str(spin)][band_idx][j][str(el)][o]
-                                for o in proj[b][str(spin)][band_idx][j][str(el)]
-                            )
+                            if el:
+                                sum_e += sum(
+                                    proj[b][str(spin)][band_idx][j][str(el)][o]
+                                    for o in proj[b][str(spin)][band_idx][j][str(el)]
+                                )
                         if sum_e == 0.0:
                             color = [0.0] * len(elt_ordered)
                         else:
@@ -1229,14 +1322,12 @@ class BSPlotterProjected(BSPlotter):
                                 sum(
                                     proj[b][str(spin)][band_idx][j][str(el)][o]
                                     for o in proj[b][str(spin)][band_idx][j][str(el)]
-                                )
-                                / sum_e
+                                ) / sum_e
+                                if el else 0.0
                                 for el in elt_ordered
                             ]
-                        if len(color) == 2:
+                        while len(color) < 4:
                             color.append(0.0)
-                            color[2] = color[1]
-                            color[1] = 0.0
 
                         sign = "--" if spin == Spin.down else "-"
 
@@ -1244,7 +1335,7 @@ class BSPlotterProjected(BSPlotter):
                             [data["distances"][b][j], data["distances"][b][j + 1]],
                             [data["energy"][str(spin)][b][band_idx][j], data["energy"][str(spin)][b][band_idx][j + 1]],
                             sign,
-                            color=color,
+                            color=tuple(color[:3]),  # Ensure color is a tuple of length 3 (RGB)
                             linewidth=band_linewidth,
                         )
 
@@ -1256,10 +1347,14 @@ class BSPlotterProjected(BSPlotter):
                 ax.set_ylim(self._bs.efermi + e_min, self._bs.efermi + e_max)
         else:
             ax.set_ylim(data["vbm"][0][1] - 4.0, data["cbm"][0][1] + 2.0)
-        # https://github.com/materialsproject/pymatgen/issues/562
         x_max = data["distances"][-1][-1]
         ax.set_xlim(0, x_max)
+
+        # Adding legend
+        ax.legend(handles=legend_elements, loc='best')
+
         return ax
+
 
     def _get_projections_by_branches_patom_pmorb(self, dictio, dictpa, sum_atoms, sum_morbs, selected_branches):
         setos = {
