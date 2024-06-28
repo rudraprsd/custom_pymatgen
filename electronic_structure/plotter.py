@@ -228,7 +228,7 @@ class DosPlotter:
                 ax.set_ylabel("Density of states (states/eV/Å³)")
             else:
                 ax.set_ylabel("Density of states (states/eV)")
-            ax.axhline(y=0, color="k", linestyle="--", linewidth=2)
+            # ax.axhline(y=0, color="k", linestyle="--", linewidth=2)
 
         # Remove duplicate labels with a dictionary
         handles, labels = ax.get_legend_handles_labels()
