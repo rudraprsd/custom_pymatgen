@@ -153,7 +153,7 @@ class DosPlotter:
         ys = None
         all_densities = []
         all_energies = []
-        ax = pretty_plot(12, 8)
+        ax = pretty_plot(12, 12)
 
         # Note that this complicated processing of energies is to allow for
         # stacked plots in matplotlib.
@@ -196,9 +196,9 @@ class DosPlotter:
                     if self.stack:
                         ax.fill(x, y, color=colors[idx % n_colors], label=str(key))
                     elif spin == Spin.down and beta_dashed:
-                        ax.plot(x, y, color=colors[idx % n_colors], label=str(key), linestyle="--", linewidth=3)
+                        ax.plot(x, y, color=colors[idx % n_colors], label=str(key), linestyle="--", linewidth=2)
                     else:
-                        ax.plot(x, y, color=colors[idx % n_colors], label=str(key), linewidth=3)
+                        ax.plot(x, y, color=colors[idx % n_colors], label=str(key), linewidth=2)
 
         if xlim:
             ax.set_xlim(xlim)
@@ -216,26 +216,26 @@ class DosPlotter:
         if self.zero_at_efermi:
             xlim = ax.get_xlim()
             ylim = ax.get_ylim()
-            ax.plot(xlim, [0, 0], "k--", linewidth=2) if invert_axes else ax.plot([0, 0], ylim, "k--", linewidth=2)
+            ax.plot(xlim, [0, 0], "k--", linewidth=1) if invert_axes else ax.plot([0, 0], ylim, "k--", linewidth=1)
 
         if invert_axes:
-            ax.set_ylabel("Energies (eV)")
-            ax.set_xlabel(f"Density of states (states/eV{'/Å³' if self._norm_val else ''})")
+            ax.set_ylabel("E - E$_f$ (eV)")
+            ax.set_xlabel(f"DOS (states/eV{'/Å³' if self._norm_val else ''})")
             ax.axvline(x=0, color="k", linestyle="--", linewidth=2)
         else:
-            ax.set_xlabel("Energies (eV)")
+            ax.set_xlabel("E - E$_f$ (eV)")
             if self._norm_val:
-                ax.set_ylabel("Density of states (states/eV/Å³)")
+                ax.set_ylabel("DOS (states/eV/Å³)")
             else:
-                ax.set_ylabel("Density of states (states/eV)")
+                ax.set_ylabel("DOS (states/eV)")
             # ax.axhline(y=0, color="k", linestyle="--", linewidth=2)
 
         # Remove duplicate labels with a dictionary
         handles, labels = ax.get_legend_handles_labels()
         label_dict = dict(zip(labels, handles))
-        ax.legend(label_dict.values(), label_dict)
-        legend_text = ax.get_legend().get_texts()  # all the text.Text instance in the legend
-        plt.setp(legend_text, fontsize=30)
+        # ax.legend(label_dict.values(), label_dict)
+        # legend_text = ax.get_legend().get_texts()  # all the text.Text instance in the legend
+        # plt.setp(legend_text, fontsize=30)
         plt.tight_layout()
         return ax
 
