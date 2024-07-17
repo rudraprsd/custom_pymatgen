@@ -6,7 +6,7 @@ INCAR:
   LMAXMIX: 2
   ISTART: 0
 KPOINTS:
-  reciprocal_density: 100 
+  reciprocal_density: 100
 POTCAR_FUNCTIONAL: PBE
 POTCAR:
   Ac: Ac
